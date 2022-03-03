@@ -44,8 +44,8 @@ func main() {
 
 	// 4- Map shows with for range
 	myMap := map[string][]string{
-		"Yaşar Kemal":    []string{"İnce Memed", "Yer Demir Gök Bakır"},
-		"Sabahattin Ali": []string{"Kuyucaklı Yusuf", "Kürk Mantolu Madonna", "Değirmen"},
+		"Yaşar Kemal":    {"İnce Memed", "Yer Demir Gök Bakır"},
+		"Sabahattin Ali": {"Kuyucaklı Yusuf", "Kürk Mantolu Madonna", "Değirmen"},
 	}
 
 	for key, value := range myMap {
