@@ -5,7 +5,7 @@ import "fmt"
 func main() {
 	slice := make([]string, 1, 3)
 	memoryfirstplace1 := &slice[0]
-	fmt.Printf("İlk Adres: %v", memoryfirstplace1)
+	fmt.Printf("İlk Adres: %v\n", memoryfirstplace1)
 	func(slice []string) {
 		slice = slice[1:3]
 		slice[0] = "b"
