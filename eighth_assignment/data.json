@@ -1,0 +1,7 @@
+{
+    "name":"Hüseyin",
+    "age":21,
+    "details":{
+        "firstkey":"firstvalue"
+    }
+}
