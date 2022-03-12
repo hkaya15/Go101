@@ -25,4 +25,7 @@ func main() {
 	num:=math.Double(5)
 	fmt.Println(num)
 
+
+	
+
 }
