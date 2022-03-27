@@ -2,17 +2,21 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"net/http/httptrace"
 	"time"
 )
 
 func main() {
 	app := appWithHttpClient()
-	res, _ := app.postNewItem()
-	fmt.Println(string(res))
+	 app.clientWithTrace()
+
 }
 
 type App struct {
@@ -148,4 +152,45 @@ func (a *App) postNewItem() ([]byte, error) {
 
 	return body, nil
 
+}
+
+func (a *App) clientWithTrace() {
+	clientTrace := &httptrace.ClientTrace{
+		GetConn:      func(hostPort string) { fmt.Println("starting to create conn ", hostPort) },
+		DNSStart:     func(info httptrace.DNSStartInfo) { fmt.Println("starting to look up dns", info) },
+        DNSDone:      func(info httptrace.DNSDoneInfo) { fmt.Println("done looking up dns", info) },
+        ConnectStart: func(network, addr string) { fmt.Println("starting tcp connection", network, addr) },
+        ConnectDone:  func(network, addr string, err error) { fmt.Println("tcp connection created", network, addr, err) },
+		GotConn: func(info httptrace.GotConnInfo) {
+			log.Printf("conn was reused: %t", info.Reused)
+		},
+	}
+
+	traceCtx := httptrace.WithClientTrace(context.Background(), clientTrace)
+
+	req, err := http.NewRequestWithContext(traceCtx, http.MethodGet, "http://example.com", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := io.Copy(ioutil.Discard, res.Body); err != nil {
+		log.Fatal(err)
+	}
+
+	res.Body.Close()
+
+	req, err = http.NewRequestWithContext(traceCtx, http.MethodGet, "http://example.com", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
