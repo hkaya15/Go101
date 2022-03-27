@@ -9,7 +9,7 @@ import (
 
 func main() {
 	app := appWithHttpClient()
-	res, _ := app.getWithQueryString()
+	res, _ := app.signInWithBearerToken()
 	fmt.Println(string(res))
 }
 
@@ -96,4 +96,29 @@ func (a *App) getWithQueryString() ([]byte, error) {
 
 	return body, nil
 
+}
+
+
+
+func (a *App) signInWithBearerToken() ([]byte, error) {
+	req, err := http.NewRequest(http.MethodGet, "http://httpbin.org/bearer", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"))
+
+	resp, err := a.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
 }
