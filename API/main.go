@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -9,7 +11,7 @@ import (
 
 func main() {
 	app := appWithHttpClient()
-	res, _ := app.signInWithBearerToken()
+	res, _ := app.postNewItem()
 	fmt.Println(string(res))
 }
 
@@ -98,8 +100,6 @@ func (a *App) getWithQueryString() ([]byte, error) {
 
 }
 
-
-
 func (a *App) signInWithBearerToken() ([]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, "http://httpbin.org/bearer", nil)
 	if err != nil {
@@ -121,4 +121,31 @@ func (a *App) signInWithBearerToken() ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func (a *App) postNewItem() ([]byte, error) {
+	values := map[string]interface{}{
+		"name": "Ahmet",
+		"age":  21,
+	}
+
+	bodyData, err := json.Marshal(values)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := a.client.Post("https://httpbin.org/post", "application/json", bytes.NewBuffer(bodyData))
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+
 }
