@@ -9,7 +9,7 @@ import (
 
 func main() {
 	app := appWithHttpClient()
-	res, _ := app.getFromAPI()
+	res, _ := app.getFromAPIWithClient()
 	fmt.Println(string(res))
 }
 
@@ -36,6 +36,27 @@ func (a *App) getFromAPI() ([]byte, error) {
 		return nil, err
 	}
 
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
+
+func (a *App) getFromAPIWithClient() ([]byte, error) {
+	req, err := http.NewRequest("GET", "https://jsonplaceholder.typicode.com/posts/1/comments", nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Accept", "application/json")
+
+	resp, err := a.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
