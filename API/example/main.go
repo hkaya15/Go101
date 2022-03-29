@@ -2,18 +2,18 @@ package main
 
 import (
 	"net/http"
-	"shopping/api"
+
+	. "shopping/api"
 )
 
-func main(){
+func main() {
 	// http.HandleFunc("/hello-world",world)
 	// http.ListenAndServe(":8080",nil)
 
-	srv:=api.NewServer()
-	http.ListenAndServe(":8080",srv)
+	srv := NewServer()
+	http.ListenAndServe(":8080", srv)
 }
 
-
-func world(w http.ResponseWriter, r *http.Request){
+func world(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("hello world"))
 }

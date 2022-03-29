@@ -34,6 +34,7 @@ func (s *Server) routes() {
 }
 
 // Create
+// curl -X POST localhost:8080/shopping-items -H "Content-Type:application/json" -d'{"name":"pırasa"}'
 func (s *Server) createShoppingItem() http.HandlerFunc {
 	return s.create
 }
